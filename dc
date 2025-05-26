@@ -1,19 +1,11 @@
 import hashlib
 
 # ===== Basic RSA Helpers =====
-def modinv(a, m):
-    m0, x0, x1 = m, 0, 1
-    while a > 1:
-        q = a // m
-        a, m = m, a % m
-        x0, x1 = x1 - q * x0, x0
-    return x1 + m0 if x1 < 0 else x1
-
 def generate_keys(p, q):
     n = p * q
     phi = (p - 1) * (q - 1)
     e = 17  # Common choice
-    d = modinv(e, phi)
+    d = pow(e, -1, phi)  # Built-in modular inverse
     return (e, d, n)
 
 def hash_data(data):
@@ -57,4 +49,4 @@ print(f"Public Key: {certificate['public_key']}")
 print(f"Signature: {certificate['signature']}")
 
 valid = verify_certificate(certificate, ca_public_key, ca_n)
-print(f"\nCertificate Valid? {'Yes' if valid else ' No'}")
+print(f"\nCertificate Valid? {'Yes' if valid else 'No'}")
