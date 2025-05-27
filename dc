@@ -29,20 +29,20 @@ def verify_certificate(cert, ca_public_key, ca_n):
     decrypted = pow(cert['signature'], ca_public_key, ca_n)
     return hashed == decrypted
 
-# ===== Demo =====
-# Step 1: CA generates keys
+#
+# CA generates keys
 ca_e, ca_d, ca_n = generate_keys(89, 97)
 ca_public_key = ca_e
 ca_private_key = ca_d
 
-# Step 2: Alice generates her keys
+# Alice generates her keys
 alice_e, alice_d, alice_n = generate_keys(61, 53)
 alice_public_key = (alice_e, alice_n)
 
-# Step 3: CA creates certificate for Alice
+#CA creates certificate for Alice
 certificate = create_certificate("Alice", alice_public_key, ca_private_key, ca_n)
 
-# Step 4: Verify the certificate
+#Verify the certificate
 print("=== Certificate ===")
 print(f"Name: {certificate['name']}")
 print(f"Public Key: {certificate['public_key']}")
