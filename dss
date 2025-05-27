@@ -2,48 +2,34 @@ import hashlib
 import math
 
 def generate_keys():
-    # Step 1: Choose primes (small for demo)
-    p = 61
-    q = 53
-    n = p * q
-    phi = (p - 1) * (q - 1)
-
-    # Step 2: Choose e such that 1 < e < phi and gcd(e, phi) = 1
-    e = 17  # Common choice
-    # Use built-in modular inverse (Python 3.8+)
-    d = pow(e, -1, phi)
-
-    return e, d, n
-
+    p=61
+    q=53
+    n=p * q
+    phi=(p - 1) * (q - 1)
+    e=17 
+    d=pow(e,-1,phi)
+    return e,d,n
 def simple_hash(msg):
-    # Use SHA-256 and convert the digest to an integer
-    h = hashlib.sha256(msg.encode()).hexdigest()
-    return int(h, 16)
+    h=hashlib.sha256(msg.encode()).hexdigest()
+    return int(h,16)
 
-def sign_message(msg, d, n):
-    h = simple_hash(msg) % n
-    signature = pow(h, d, n)
+def sign_message(msg,d,n):
+    h=simple_hash(msg) % n
+    signature=pow(h, d, n)
     return signature
 
 def verify_signature(msg, signature, e, n):
-    h = simple_hash(msg) % n
-    h_from_signature = pow(signature, e, n)
-    return h == h_from_signature
+    h=simple_hash(msg) % n
+    h_from_signature=pow(signature, e, n)
+    return h==h_from_signature
 
-# === DEMO ===
-e, d, n = generate_keys()
-message = "Hello"
+e, d, n=generate_keys()
+message="Hello"
 print(f"Original Message: {message}")
-
-# Alice signs the message
 signature = sign_message(message, d, n)
 print(f"Digital Signature: {signature}")
-
-# Bob verifies the message
-is_valid = verify_signature(message, signature, e, n)
+is_valid=verify_signature(message, signature, e, n)
 print(f"Signature Valid? {'Yes' if is_valid else 'No'}")
-
-# Test tampering
-tampered_message = "Hallo"
-is_valid = verify_signature(tampered_message, signature, e, n)
+tampered_message="Hallo"
+is_valid=verify_signature(tampered_message, signature, e, n)
 print(f"TAMPERED Signature Valid? {'Yes' if is_valid else 'No'}")
