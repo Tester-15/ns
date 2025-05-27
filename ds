@@ -1,33 +1,19 @@
 import hashlib
-
-def gcd(a, b):
-    while b:
-        a, b = b, a % b
-    return a
-
-def modinv(a, m):
-    # Extended Euclidean Algorithm for finding modular inverse
-    m0, x0, x1 = m, 0, 1
-    while a > 1:
-        q = a // m
-        a, m = m, a % m
-        x0, x1 = x1 - q * x0, x0
-    if x1 < 0:
-        x1 += m0
-    return x1
+import math
 
 def generate_keys():
-    # Step 1: Choose primes (for demo purposes, small values)
+    # Step 1: Choose primes (small for demo)
     p = 61
     q = 53
     n = p * q
     phi = (p - 1) * (q - 1)
 
     # Step 2: Choose e such that 1 < e < phi and gcd(e, phi) = 1
-    e = 17  # Common small exponent
-    d = modinv(e, phi)
+    e = 17  # Common choice
+    # Use built-in modular inverse (Python 3.8+)
+    d = pow(e, -1, phi)
 
-    return (e, d, n)
+    return e, d, n
 
 def simple_hash(msg):
     # Use SHA-256 and convert the digest to an integer
@@ -45,7 +31,6 @@ def verify_signature(msg, signature, e, n):
     return h == h_from_signature
 
 # === DEMO ===
-
 e, d, n = generate_keys()
 message = "Hello"
 print(f"Original Message: {message}")
@@ -56,9 +41,9 @@ print(f"Digital Signature: {signature}")
 
 # Bob verifies the message
 is_valid = verify_signature(message, signature, e, n)
-print(f"Signature Valid? {' Yes' if is_valid else 'No'}")
+print(f"Signature Valid? {'Yes' if is_valid else 'No'}")
 
 # Test tampering
 tampered_message = "Hallo"
 is_valid = verify_signature(tampered_message, signature, e, n)
-print(f"TAMPERED Signature Valid? {'yes if is_valid else 'No'}")
+print(f"TAMPERED Signature Valid? {'Yes' if is_valid else 'No'}")
