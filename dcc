@@ -1,0 +1,35 @@
+import hashlib
+
+def generate_keys(p, q):
+    n=p*q
+    phi=(p - 1) * (q - 1)
+    e=17
+    d=pow(e, -1, phi)
+    return(e, d, n)
+def hash_data(data):
+    h=hashlib.sha256(data.encode()).hexdigest()
+    return int(h, 16)
+def create_certificate(name,public_key,ca_private_key,ca_n):
+    data=f"{name}:{public_key[0]}:{public_key[1]}"
+    hashed=hash_data(data) % ca_n
+    signature=pow(hashed,ca_private_key,ca_n)
+    return {"name": name,"public_key": public_key,"signature": signature}
+def verify_certificate(cert, ca_public_key, ca_n):
+    data=f"{cert['name']}:{cert['public_key'][0]}:{cert['public_key'][1]}"
+    hashed=hash_data(data) % ca_n
+    decrypted=pow(cert['signature'],ca_public_key,ca_n)
+    return hashed==decrypted
+
+
+ca_e, ca_d, ca_n=generate_keys(89, 97)
+ca_public_key=ca_e
+ca_private_key=ca_d
+alice_e, alice_d, alice_n=generate_keys(61, 53)
+alice_public_key = (alice_e, alice_n)
+certificate = create_certificate("Alice", alice_public_key, ca_private_key, ca_n)
+print("=== Certificate ===")
+print(f"Name: {certificate['name']}")
+print(f"Public Key: {certificate['public_key']}")
+print(f"Signature: {certificate['signature']}")
+valid = verify_certificate(certificate, ca_public_key, ca_n)
+print(f"\nCertificate Valid? {'Yes' if valid else 'No'}")
